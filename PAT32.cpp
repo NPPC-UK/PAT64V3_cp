@@ -6,11 +6,19 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <regex>
+
+#include <boost/filesystem.hpp>
 //#include "BrowseDir.h"
+
+#include "filesystem.h"
 
 
 using namespace cv;
 using namespace std;
+
+using boost::filesystem::is_directory;
+using boost::filesystem::path;
 
 FILE *fp;
 Mat* DeconvolutionMat(Mat img, int m_flag);
@@ -28,7 +36,6 @@ Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 int main(int argc, char* argv[])
 {
-	CStatDir statdir;
 	char* inputpath;
 	char* outputpath;
 	char* angle;
@@ -54,12 +61,13 @@ int main(int argc, char* argv[])
 		char* fname=new char[f.length()+1];
 		strcpy(fname, f.c_str());
 
-		if(statdir.SetInitDir(inputpath))
+		if(is_directory(path(inputpath)))
 		{
 			s=inputpath;
 			
-			vector<string> file_vec = statdir.BeginBrowseFilenames("*.*");  
-			for(vector<string>::const_iterator it = file_vec.begin(); it < file_vec.end(); ++it)  
+			vector<path> file_vec = getFiles(path(inputpath), regex(".*\\..*"));  
+			
+                        for(vector<path>::const_iterator it = file_vec.begin(); it < file_vec.end(); ++it)  
 			{
 				
 				s=it->c_str();
@@ -275,13 +283,16 @@ void GetData(char* filename, char* outputpath, string s1, string s2)
 				leafArea=pixelcount*(150/double(pot_width))*(150/double(pot_width));
 
 				char s[200];
-				sprintf_s(s, 200, "%0.fmm", p_h );
+				// sprintf_s(s, 200, "%0.fmm", p_h );
+				sprintf(s, "%0.fmm", p_h );
 				putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2), 0, 2, Scalar(155,155,0), 3, 8,false);
 
-				sprintf_s(s, 200, "%0.fmm", p_h_t );
+				//sprintf_s(s, 200, "%0.fmm", p_h_t );
+				sprintf(s, "%0.fmm", p_h_t );
 				putText(image, s, Point(image.cols*0.25-5,tiller[0].y+plant_height_t/2), 0, 2, Scalar(155,155,0), 3, 8,false);
 
-				sprintf_s(s, 200, "%0.fsquare mm", leafArea );
+				//sprintf_s(s, 200, "%0.fsquare mm", leafArea );
+				sprintf(s, "%0.fsquare mm", leafArea );
 				putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2+70), 0, 2, Scalar(155,155,0), 3, 8,false);
 
 				rectangle(image, rectB, Scalar(0, 0, 255), 1, 8, 0);
