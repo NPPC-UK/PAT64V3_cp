@@ -30,77 +30,77 @@ Point* OnPotPoints(Mat img);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
 Mat RestoreImgFromTemp(Mat temp, Mat source);
 int OnCountPixels(Mat img, int pottop, int planttop);
-void GetData(char* filename, char* outputpath, string s1, string s2);
+void GetData(const char* filename, const char* outputpath, string s1, string s2);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 int main(int argc, char* argv[])
 {
-  char* inputpath;
-  char* outputpath;
+  path inputpath, outputpath, f, filename, s;
   char* angle;
-  string s, f, s1, s2;
+  string s1, s2;
 
 
   if(argc<3)
     cout<<"Please input input and output directories \n";
   else
   {
-    inputpath=argv[1];
-    outputpath=argv[2];
+    inputpath=path(argv[1]);
+    outputpath=path(argv[2]);
     angle=argv[3];
 
-    f=outputpath;
-    f.append("\\output");
+    f = path(outputpath);
+    f /= "output";
     if(strcmp(angle,"VIS_sv_000")==0)
-      f.append("_000.txt");
+      f += "_000.txt";
     else if(strcmp(angle,"VIS_sv_045")==0)
-      f.append("_045.txt");
+      f += "_045.txt";
     else if(strcmp(angle,"VIS_sv_090")==0)
-      f.append("_090.txt");
-    char* fname=new char[f.length()+1];
-    strcpy(fname, f.c_str());
+      f += "_090.txt";
 
-    if(is_directory(path(inputpath)))
+    if(is_directory(inputpath))
     {
-      s=inputpath;
 
-      vector<path> file_vec = getFiles(path(inputpath), regex(".*\\..*"));  
+      vector<path> file_vec = getFiles(inputpath, regex(".*\\..*"));  
 
       for(vector<path>::const_iterator it = file_vec.begin(); it < file_vec.end(); ++it)  
       {
 
-        s=it->c_str();
+        s = path(*it);
 
-        if((s.find("2016-")!=-1 || s.find("2017-")!=-1) && s.find("W037-")!=-1 && s.find(angle)!=-1 && s.find(".png")!=-1 && s.find("W037_")!=-1)
+        if((s.native().find("2016-") != -1 || 
+            s.native().find("2017-") != -1) && 
+           s.native().find("W037-") != -1 && 
+           s.native().find(angle) != -1 && 
+           s.native().find(".png") != -1 && 
+           s.native().find("W037_")!=-1)
         {
-          char* filename=new char[s.length()+1];
-          strcpy(filename, s.c_str());
+          filename = path(s);
 
-          if(s.find("2016-")!=-1)
-            s1=s.substr(s.find("2016-"), 10);
-          if(s.find("2017-")!=-1)
-            s1=s.substr(s.find("2017-"), 10);
-          s2=s.substr(s.find("W037-"), 10);
-          s.assign(outputpath);
-          s.append("\\");
-          s.append(s1);
-          s.append("_");
-          s.append(s2);
+          if(s.native().find("2016-")!=-1)
+            s1=s.native().substr(s.native().find("2016-"), 10);
+          if(s.native().find("2017-")!=-1)
+            s1=s.native().substr(s.native().find("2017-"), 10);
+
+          s2=s.native().substr(s.native().find("W037-"), 10);
+
+          s = path(outputpath);
+          s /= s1;
+          s += "_" + s2;
+
           if(strcmp(angle,"VIS_sv_000")==0)
-            s.append("_000.jpg");
+            s += "_000.jpg";
           else if(strcmp(angle,"VIS_sv_045")==0)
-            s.append("_045.jpg");
+            s += "_045.jpg";
           else if(strcmp(angle,"VIS_sv_090")==0)
-            s.append("_090.jpg");
+            s += "_090.jpg";
 
-          char* outputname=new char[s.length()+1];
-          strcpy(outputname, s.c_str());
           cout<<filename<<"\n";
 
-          fp=fopen(fname, "a");
+          cout << "F: " << f << '\n';
+          fp=fopen(f.c_str(), "a");
           fprintf(fp, "%s,%s,", s1, s2);
-          GetData(filename, outputname, s1, s2);
+          GetData(filename.c_str(), s.c_str(), s1, s2);
           fprintf(fp, "\n");
           fclose(fp);
         }
@@ -112,8 +112,9 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-void GetData(char* filename, char* outputpath, string s1, string s2)
+void GetData(const char* filename, const char* outputpath, string s1, string s2)
 {
+  cout << "Running 'GetData'\n";
   Mat img;
   img=imread(filename);
 
