@@ -9,6 +9,7 @@
 #include <regex>
 
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 //#include "BrowseDir.h"
 
 #include "filesystem.h"
@@ -19,6 +20,7 @@ using namespace std;
 
 using boost::filesystem::is_directory;
 using boost::filesystem::path;
+namespace po = boost::program_options;
 
 FILE *fp;
 Mat* DeconvolutionMat(Mat img, int m_flag);
@@ -37,25 +39,44 @@ Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 int main(int argc, char* argv[])
 {
   path inputpath, outputpath, f, filename, s;
-  char* angle;
-  string s1, s2;
+  string angle, s1, s2, experiment;
 
+  po::options_description desc = po::options_description("Allowed options");
+  desc.add_options()
+    ("help", "print this help message")
+    ("input-directory", po::value<string>(), "Input directory containing data")
+    ("output-directory", po::value<string>(), "Output directory")
+    ("angle", po::value<string>(), "Image angle")
+    ("experiment", po::value<string>(), "Experiment to process")
+  ; 
 
-  if(argc<3)
-    cout<<"Please input input and output directories \n";
-  else
-  {
-    inputpath=path(argv[1]);
-    outputpath=path(argv[2]);
-    angle=argv[3];
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
+
+  if (!(vm.count("input-directory") && 
+        vm.count("output-directory") && 
+        vm.count("angle") &&
+        vm.count("experiment"))) {
+    cout << desc << '\n';
+    return 1;
+  } else if (vm.count("help")){
+    cout << desc << '\n'; 
+    return 0;
+  } else {
+
+    inputpath = path(vm["input-directory"].as<string>());
+    outputpath = path(vm["output-directory"].as<string>());
+    angle = vm["angle"].as<string>();
+    experiment = vm["experiment"].as<string>();
 
     f = path(outputpath);
     f /= "output";
-    if(strcmp(angle,"VIS_sv_000")==0)
+    if(angle.compare("VIS_sv_000")==0)
       f += "_000.txt";
-    else if(strcmp(angle,"VIS_sv_045")==0)
+    else if(angle.compare("VIS_sv_045")==0)
       f += "_045.txt";
-    else if(strcmp(angle,"VIS_sv_090")==0)
+    else if(angle.compare("VIS_sv_090")==0)
       f += "_090.txt";
 
     if(is_directory(inputpath))
@@ -70,10 +91,10 @@ int main(int argc, char* argv[])
 
         if((s.native().find("2016-") != -1 || 
             s.native().find("2017-") != -1) && 
-           s.native().find("W037-") != -1 && 
+           s.native().find(experiment + "-") != -1 && 
            s.native().find(angle) != -1 && 
            s.native().find(".png") != -1 && 
-           s.native().find("W037_")!=-1)
+           s.native().find(experiment + "_")!=-1)
         {
           filename = path(s);
 
@@ -82,17 +103,17 @@ int main(int argc, char* argv[])
           if(s.native().find("2017-")!=-1)
             s1=s.native().substr(s.native().find("2017-"), 10);
 
-          s2=s.native().substr(s.native().find("W037-"), 10);
+          s2=s.native().substr(s.native().find(experiment + "-"), 10);
 
           s = path(outputpath);
           s /= s1;
           s += "_" + s2;
 
-          if(strcmp(angle,"VIS_sv_000")==0)
+          if(angle.compare("VIS_sv_000")==0)
             s += "_000.jpg";
-          else if(strcmp(angle,"VIS_sv_045")==0)
+          else if(angle.compare("VIS_sv_045")==0)
             s += "_045.jpg";
-          else if(strcmp(angle,"VIS_sv_090")==0)
+          else if(angle.compare("VIS_sv_090")==0)
             s += "_090.jpg";
 
           cout<<filename<<"\n";
