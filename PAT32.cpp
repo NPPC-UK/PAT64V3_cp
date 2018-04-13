@@ -8,6 +8,7 @@
 
 #include "filesystem.h"
 #include "analysis.h"
+#include "format_string.h"
 
 
 using namespace std;
@@ -16,8 +17,6 @@ using boost::filesystem::is_directory;
 using boost::filesystem::path;
 namespace po = boost::program_options;
 
-
-FILE *fp;
 
 int main(int argc, char* argv[])
 {
@@ -102,11 +101,15 @@ int main(int argc, char* argv[])
           cout<<filename<<"\n";
 
           cout << "F: " << f << '\n';
-          fp=fopen(f.c_str(), "a");
-          fprintf(fp, "%s,%s,", s1, s2);
-          GetData(filename.c_str(), s.c_str(), s1, s2);
-          fprintf(fp, "\n");
-          fclose(fp);
+
+          struct plant_data p_data = GetData(filename.c_str(), s.c_str());
+
+          std::string sep = ", ";
+          std::ofstream ofs(f.c_str(), std::ios_base::app);
+          ofs << s1 << sep <<
+                 s2 << sep <<
+                 p_data.to_string(sep) << endl;
+          ofs.close();
         }
 
       }
