@@ -13,108 +13,76 @@
 
 using namespace std;
 
-using boost::filesystem::is_directory;
+using boost::filesystem::exists;
 using boost::filesystem::path;
 namespace po = boost::program_options;
 
 
 int main(int argc, char* argv[])
 {
-  path inputpath, outputpath, f, filename, s;
-  string angle, s1, s2, experiment;
+  path infile, outfile;
+  string date, plant_id;
 
   po::options_description desc = po::options_description("Allowed options");
   desc.add_options()
     ("help", "print this help message")
-    ("input-directory", po::value<string>(), "Input directory containing data")
-    ("output-directory", po::value<string>(), "Output directory")
-    ("angle", po::value<string>(), "Image angle")
-    ("experiment", po::value<string>(), "Experiment to process")
-  ; 
+    ("input-file", po::value<string>(), "Input image file")
+    ("date", po::value<string>(), "Date of image acquisition")
+    ("plant-id", po::value<string>(), "Plant ID")
+    ("output-file", po::value<string>(), "Masked output image (jpeg)")
+    ; 
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
 
-  if (!(vm.count("input-directory") && 
-        vm.count("output-directory") && 
-        vm.count("angle") &&
-        vm.count("experiment"))) {
-    cout << desc << '\n';
+  if (!vm.count("input-file")) {
+    cerr << desc << endl;
     return 1;
   } else if (vm.count("help")){
-    cout << desc << '\n'; 
+    cout << desc << endl; 
     return 0;
-  } else {
+  } 
 
-    inputpath = path(vm["input-directory"].as<string>());
-    outputpath = path(vm["output-directory"].as<string>());
-    angle = vm["angle"].as<string>();
-    experiment = vm["experiment"].as<string>();
+  infile = path(vm["input-file"].as<string>());
 
-    f = path(outputpath);
-    f /= "output";
-    if(angle.compare("VIS_sv_000")==0)
-      f += "_000.txt";
-    else if(angle.compare("VIS_sv_045")==0)
-      f += "_045.txt";
-    else if(angle.compare("VIS_sv_090")==0)
-      f += "_090.txt";
+  if (vm.count("date"))
+    date = vm["date"].as<string>();
+  else
+    date = "NA";
 
-    if(is_directory(inputpath))
-    {
+  if (vm.count("plant-id"))
+    plant_id = vm["plant-id"].as<string>();
+  else
+    plant_id = "NA";
 
-      vector<path> file_vec = getFiles(inputpath, regex(".*\\..*"));  
+  if(!exists(infile)) {
+    cerr << "File not found: " << infile.native() << endl;
+    return 1;
+  }
 
-      for(vector<path>::const_iterator it = file_vec.begin(); it < file_vec.end(); ++it)  
-      {
+  if (vm.count("output-file")) {
+    outfile = path(vm["output-file"].as<string>());
 
-        s = path(*it);
-
-        if((s.native().find("2016-") != -1 || 
-            s.native().find("2017-") != -1) && 
-           s.native().find(experiment + "-") != -1 && 
-           s.native().find(angle) != -1 && 
-           s.native().find(".png") != -1 && 
-           s.native().find(experiment + "_")!=-1)
-        {
-          filename = path(s);
-
-          if(s.native().find("2016-")!=-1)
-            s1=s.native().substr(s.native().find("2016-"), 10);
-          if(s.native().find("2017-")!=-1)
-            s1=s.native().substr(s.native().find("2017-"), 10);
-
-          s2=s.native().substr(s.native().find(experiment + "-"), 10);
-
-          s = path(outputpath);
-          s /= s1;
-          s += "_" + s2;
-
-          if(angle.compare("VIS_sv_000")==0)
-            s += "_000.jpg";
-          else if(angle.compare("VIS_sv_045")==0)
-            s += "_045.jpg";
-          else if(angle.compare("VIS_sv_090")==0)
-            s += "_090.jpg";
-
-          cout<<filename<<"\n";
-
-          cout << "F: " << f << '\n';
-
-          struct plant_data p_data = GetData(filename.c_str(), s.c_str());
-
-          std::string sep = ", ";
-          std::ofstream ofs(f.c_str(), std::ios_base::app);
-          ofs << s1 << sep <<
-                 s2 << sep <<
-                 p_data.to_string(sep) << endl;
-          ofs.close();
-        }
-
-      }
+    if (!is_directory(outfile.parent_path())) {
+      cerr << "Cannot create file: " + outfile.native() +
+        "\n Parent directory does not exist." << endl;
+      return 1;
     }
   }
+
+
+
+  struct plant_data p_data = GetData(infile.native().c_str());
+
+
+  std::string sep = ", ";
+  cout << plant_id << sep <<
+    date << sep <<
+    p_data.to_string(sep) << endl;
+
+  if (vm.count("output-file"))
+    cv::imwrite(outfile.native(), p_data.image);
 
   return 0;
 }

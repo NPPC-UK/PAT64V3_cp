@@ -12,7 +12,7 @@
 using namespace cv;
 using namespace std;
 
-void GetData(const char* filename, const char* outputpath, string s1, string s2)
+plant_data GetData(const char* filename, const char* outputpath, string s1, string s2)
 {
   FILE *fp;
   FILE *fp1;

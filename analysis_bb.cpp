@@ -29,7 +29,6 @@ plant_data GetData(const char* filename, const char* outputpath)
  
 
 
-  cout << "Running 'GetData'\n";
   Mat img;
   img=imread(filename);
 
@@ -348,7 +347,7 @@ plant_data GetData(const char* filename, const char* outputpath)
     p_data.t60y = t60y;
 
 
-    imwrite(outputpath, image);
+    p_data.image = image;
 
     delete[] pImg0;
   }

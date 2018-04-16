@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <opencv2/opencv.hpp>
+
 class plant_data {
   public:
   int plant_height;
@@ -18,6 +20,7 @@ class plant_data {
   int t40y;
   int t60;
   int t60y;
+  cv::Mat image;
 
   std::string to_string(std::string const separator) const;
   std::string to_string(char* const separator) const;
@@ -26,6 +29,6 @@ class plant_data {
   plant_data();
 }; 
 
-plant_data GetData(const char* filename, const char* outputpath);
+plant_data GetData(const char* filename);
 
 #endif
