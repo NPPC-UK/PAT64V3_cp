@@ -12,22 +12,21 @@
 using namespace cv;
 using namespace std;
 
-plant_data GetData(const char* filename, const char* outputpath)
+Mat* DeconvolutionMat(Mat img, int m_flag);
+Mat CompareImagePixels(Mat img1, Mat img2);
+Point* OnPlantTop(Mat img, Rect rect);
+Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
+Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
+Point* OnPotPoints(Mat img);
+Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
+Mat RestoreImgFromTemp(Mat temp, Mat source);
+int OnCountPixels(Mat img, int pottop, int planttop);
+Mat RemoveFrame(Mat temp, Mat source);
+Mat FindPlantPixels(Mat img, double gthres, double gbthres);
+
+plant_data GetData(const char* filename)
 {
   plant_data p_data;
-  Mat* DeconvolutionMat(Mat img, int m_flag);
-  Mat CompareImagePixels(Mat img1, Mat img2);
-  Point* OnPlantTop(Mat img, Rect rect);
-  Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
-  Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
-  Point* OnPotPoints(Mat img);
-  Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
-  Mat RestoreImgFromTemp(Mat temp, Mat source);
-  int OnCountPixels(Mat img, int pottop, int planttop);
-  Mat RemoveFrame(Mat temp, Mat source);
-  Mat FindPlantPixels(Mat img, double gthres, double gbthres);
- 
-
 
   Mat img;
   img=imread(filename);

@@ -12,24 +12,20 @@
 using namespace cv;
 using namespace std;
 
-plant_data GetData(const char* filename, const char* outputpath, string s1, string s2)
+Mat* DeconvolutionMat(Mat img, int m_flag);
+Mat CompareImagePixels(Mat img1, Mat img2);
+Point* OnPlantTop(Mat img, Rect rect);
+Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
+Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
+Point* OnPotPoints(Mat img);
+Mat RestoreImgFromTemp(Mat temp, Mat source);
+int OnCountPixels(Mat img, int pottop, int planttop);
+Mat RemoveFrame(Mat temp, Mat source);
+Mat FindPlantPixels(Mat img, double gthres, double gbthres);
+
+plant_data GetData(const char* filename)
 {
-  FILE *fp;
-  FILE *fp1;
-  FILE *fp2;
-  Mat* DeconvolutionMat(Mat img, int m_flag);
-  Mat CompareImagePixels(Mat img1, Mat img2);
-  Point* OnPlantTop(Mat img, Rect rect);
-  Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
-  Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
-  Point* OnPotPoints(Mat img);
-  Mat RestoreImgFromTemp(Mat temp, Mat source);
-  int OnCountPixels(Mat img, int pottop, int planttop);
-  void GetData(char* filename, char* outputpath, string s1, string s2);
-  Mat RemoveFrame(Mat temp, Mat source);
-  Mat FindPlantPixels(Mat img, double gthres, double gbthres);
-
-
+  plant_data p_data = plant_data();
 
   Mat img;
   img=imread(filename);
@@ -81,65 +77,65 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
     int rx, ry, rw, rh;
 
 
-    if(strcmp(s1.c_str(), "2015-04-27")==0)
-    {
-      rx=817;
-      ry=2045;
-      rw=360;
-      rh=345;
-      fprintf(fp2, "%d", rx);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", ry);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", rw);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", rh);
-      fprintf(fp2, "\n");
-      fclose(fp2);
-    }
+    //if(strcmp(s1.c_str(), "2015-04-27")==0)
+    //{
+    //  rx=817;
+    //  ry=2045;
+    //  rw=360;
+    //  rh=345;
+    //  fprintf(fp2, "%d", rx);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", ry);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", rw);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", rh);
+    //  fprintf(fp2, "\n");
+    //  fclose(fp2);
+    //}
 
-    if(strcmp(s1.c_str(), "2015-04-01")==0)
-    {
-      rx=740;
-      ry=1880;
-      rw=510;
-      rh=500;
-      fprintf(fp2, "%d", rx);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", ry);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", rw);
-      fprintf(fp2, "\n");
-      fprintf(fp2, "%d", rh);
-      fprintf(fp2, "\n");
-      fclose(fp2);
-    }
+    //if(strcmp(s1.c_str(), "2015-04-01")==0)
+    //{
+    //  rx=740;
+    //  ry=1880;
+    //  rw=510;
+    //  rh=500;
+    //  fprintf(fp2, "%d", rx);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", ry);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", rw);
+    //  fprintf(fp2, "\n");
+    //  fprintf(fp2, "%d", rh);
+    //  fprintf(fp2, "\n");
+    //  fclose(fp2);
+    //}
 
 
-    string sss;
-    sss.assign(outputpath);
-    sss=sss.substr(0, sss.rfind("W8-"));
-    sss.append("\\carsize.txt");
+    //string sss;
+    //sss.assign(outputpath);
+    //sss=sss.substr(0, sss.rfind("W8-"));
+    //sss.append("\\carsize.txt");
 
-    char buffer1[256]; 
-    int k1[4], ki1=0;
-    fstream outFile1;  
-    outFile1.open(sss.c_str(),ios::in);  
-    cout<<sss.c_str()<<"--- all file is as follows:---"<<endl;  
-    while(!outFile1.eof())  
-    {  
-      outFile1.getline(buffer1,256,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束  
-      k1[ki1]=atoi(buffer1);
-      cout<<k1[ki1]<<endl;  
-      ki1=ki1+1;
-    }  
+    //char buffer1[256]; 
+    //int k1[4], ki1=0;
+    //fstream outFile1;  
+    //outFile1.open(sss.c_str(),ios::in);  
+    //cout<<sss.c_str()<<"--- all file is as follows:---"<<endl;  
+    //while(!outFile1.eof())  
+    //{  
+    //  outFile1.getline(buffer1,256,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束  
+    //  k1[ki1]=atoi(buffer1);
+    //  cout<<k1[ki1]<<endl;  
+    //  ki1=ki1+1;
+    //}  
 
-    outFile1.close();  
+    //outFile1.close();  
 
-    rectA.x=k1[0];;
-    rectA.y=k1[1];
-    rectA.width=k1[2];
-    rectA.height=k1[3];
+    rectA.x=740;
+    rectA.y=2060;
+    rectA.width=510;
+    rectA.height=300;
 
     Rect rectB;
     rectB.x = rectA.x- rectA.width*1.7;
@@ -150,7 +146,9 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
     if(rectB.x+rectB.width>conHull.cols)
       rectB.width=conHull.cols-2*rectB.x;
     rectB.height = rectA.y+float(rectA.height)*0.07-10;//calculate height from the pot top
-    //rectB.height = rectA.y+rectA.height-rectA.width-rectB.y;//calculate height from the pot bottom
+    rectB.height = rectA.y+rectA.height-rectA.width-rectB.y;//calculate height from the pot bottom
+
+    rectB.height = 2050;
 
     Mat tn;
     tn=FindPlantPixels(img, 0.85, 1.3);//original 0.001, w2 is 0.02; 0.7, 0.02; VF1: 0.6, 0.000, w11 0.85, b*1.3<g
@@ -164,7 +162,7 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
     //img=img+tn;
 
     Mat out;
-    //out=RemoveFrame(tmp, img);//we do not have to remove frame if we can find plant pixel better
+    out=RemoveFrame(tmp, img);//we do not have to remove frame if we can find plant pixel better
     out=tn;
 
     Mat drawing = Mat::zeros( image.size(), CV_8UC3 );
@@ -191,8 +189,8 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
       trect=boundingRect(contours[idx]);
 
       //if(trect.x+trect.width/2>roi.cols*0.20 && trect.x+trect.width/2<roi.cols*0.8 && trect.y+trect.height/2>rectB.x+rectB.height*0.3)
-      if(trect.x+trect.width/2>roi.cols*0.10 && trect.x+trect.width/2<roi.cols*0.9 && trect.y+trect.height/2>rectB.y+rectB.height*0.1)
-        if(area>70)
+      if(trect.x+trect.width/2>roi.cols*0.10 && trect.x+trect.width/2<roi.cols*0.9 && trect.y+trect.height/2>rectB.y+10)
+        if(area>200)
         {
           Scalar color( 100, 100, 0 );
           drawContours( roi1, contours, idx, color, CV_FILLED, 8, hierarchy );
@@ -252,35 +250,14 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
     rectangle(image, rectA, Scalar(0, 0, 255), 1, 8, 0);
 
 
-    if(strcmp(s1.c_str(), "2015-04-27")==0)
-    {
-      fprintf(fp1, "%d", plant_height);
-      fprintf(fp1, "\n");
-      fprintf(fp1, "%d", pot_width);
-      fprintf(fp1, "\n");
-      fclose(fp1);
-    }
-
-    string ss;
-    ss.assign(outputpath);
-    ss=ss.substr(0, ss.rfind("W8-"));
-    //ss.append("\\");
-    ss.append(s2);
-    ss.append(".txt");
-
-    char buffer[256]; 
-    int k[3], ki=0;
-    fstream outFile;  
-    outFile.open(ss.c_str(),ios::in);  
-    cout<<ss.c_str()<<"--- all file is as follows:---"<<endl;  
-    while(!outFile.eof())  
-    {  
-      outFile.getline(buffer,256,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束  
-      k[ki]=atoi(buffer);
-      cout<<k[ki]<<endl;  
-      ki=ki+1;
-    }  
-    outFile.close();  
+    //if(strcmp(s1.c_str(), "2015-04-27")==0)
+    //{
+    //  fprintf(fp1, "%d", plant_height);
+    //  fprintf(fp1, "\n");
+    //  fprintf(fp1, "%d", pot_width);
+    //  fprintf(fp1, "\n");
+    //  fclose(fp1);
+    //}
 
     int t00=0;
     int t00y=0;
@@ -291,16 +268,10 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
     int t60=0;
     int t60y=0;
 
-    int finalheight=k[0];
-    int finalpotwidth=k[1];
-    int potsidestartingpoint=rectA.y+float(rectA.height)*0.07;
-
-    finalheight=float(finalheight)*float(pot_width)/(float(finalpotwidth)+0.0000001);
-
     int yellowcount=0;
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=(potsidestartingpoint-finalheight<0?0:potsidestartingpoint-finalheight); k<potsidestartingpoint-finalheight*0.75; k++)
+      for(int k=tops[0].y; k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -324,11 +295,12 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
         }
       }
 
-    line(image, Point(500, potsidestartingpoint-finalheight), Point(1954, potsidestartingpoint-finalheight), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, tops[0].y), Point(1954, tops[0].y), Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=potsidestartingpoint-finalheight*0.75; k<potsidestartingpoint-finalheight*0.5; k++)
+      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; 
+          k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -352,11 +324,16 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
         }
       }
 
-    line(image, Point(500, potsidestartingpoint-finalheight*0.75), Point(1954, potsidestartingpoint-finalheight*0.75), Scalar(0,255,255), 2, 8, 0);
+    line(image, 
+        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2),
+        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2), 
+        Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=potsidestartingpoint-finalheight*0.5; k<potsidestartingpoint-finalheight*0.25; k++)
+      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y);
+          k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; 
+          k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -380,11 +357,16 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
         }
       }
 
-    line(image, Point(500, potsidestartingpoint-finalheight*0.5), Point(1954, potsidestartingpoint-finalheight*0.5), Scalar(0,255,255), 2, 8, 0);
+    line(image, 
+        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), 
+        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), 
+        Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=potsidestartingpoint-finalheight*0.25; k<potsidestartingpoint; k++)
+      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; 
+          k<rectB.y+rectB.height; 
+          k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -408,15 +390,27 @@ plant_data GetData(const char* filename, const char* outputpath, string s1, stri
         }
       }
 
-    line(image, Point(500, potsidestartingpoint-finalheight*0.25), Point(1954, potsidestartingpoint-finalheight*0.25), Scalar(0,255,255), 2, 8, 0);
+    line(image, 
+        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), 
+        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), 
+        Scalar(0,255,255), 2, 8, 0);
 
-    fprintf(fp, "%d,%d,%0.f,%0.f,%0.f,%d,", plant_height, pot_width, p_h, pixelcount, leafArea, yellowcount);
-    fprintf(fp, "%d, %d, %d, %d, %d, %d, %d, %d", t00, t00y, t20, t20y, t40, t40y, t60, t60y);
-
-    imwrite(outputpath, image);
+    p_data.plant_height = plant_height;
+    p_data.pot_width = pot_width;
+    p_data.p_h = p_h;
+    p_data.pixelcount = pixelcount;
+    p_data.leafArea = leafArea;
+    p_data.t20 = t20;
+    p_data.t20y = t20y;
+    p_data.t40 = t40;
+    p_data.t40y = t40y;
+    p_data.t60 = t60;
+    p_data.t60y = t60y;
+    p_data.image = image;
 
     delete[] pImg0;
   }
+  return p_data;
 }
 
 int OnCountPixels(Mat img, int pottop, int planttop)

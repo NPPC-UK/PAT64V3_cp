@@ -1,4 +1,6 @@
 PAT32
+PAT32_wb
+PAT32_bb
 # Prerequisites
 *.d
 
