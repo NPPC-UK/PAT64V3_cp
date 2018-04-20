@@ -133,7 +133,7 @@ plant_data GetData(const char* filename)
     //outFile1.close();  
 
     rectA.x=740;
-    rectA.y=2060;
+    rectA.y=2310;
     rectA.width=510;
     rectA.height=300;
 
@@ -148,7 +148,7 @@ plant_data GetData(const char* filename)
     rectB.height = rectA.y+float(rectA.height)*0.07-10;//calculate height from the pot top
     rectB.height = rectA.y+rectA.height-rectA.width-rectB.y;//calculate height from the pot bottom
 
-    rectB.height = 2050;
+    rectB.height = 2300;
 
     Mat tn;
     tn=FindPlantPixels(img, 0.85, 1.3);//original 0.001, w2 is 0.02; 0.7, 0.02; VF1: 0.6, 0.000, w11 0.85, b*1.3<g
