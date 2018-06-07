@@ -400,6 +400,7 @@ plant_data GetData(const char* filename)
     p_data.p_h = p_h;
     p_data.pixelcount = pixelcount;
     p_data.leafArea = leafArea;
+    p_data.yellowcount = yellowcount;
     p_data.t20 = t20;
     p_data.t20y = t20y;
     p_data.t40 = t40;
