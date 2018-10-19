@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "analysis.h"
-#include "plant_data.h"
+#include "plant_data_wheat.h"
 
 
 using namespace cv;
@@ -27,7 +27,7 @@ Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 plant_data GetData(const char* filename)
 {
-  plant_data p_data;
+  wheat_data p_data = wheat_data();
 
   Mat img;
   img=imread(filename);
