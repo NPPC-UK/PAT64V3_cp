@@ -7,22 +7,22 @@ filesystem.o: filesystem.cpp filesystem.h
 format_string.o: format_string.cpp format_string.h
 	${GCC} -c format_string.cpp ${LIBS} ${ARGS} -ggdb
 
-analysis_common.o: analysis_common.cpp analysis.h
+plant_data.o: plant_data.cpp plant_data.h
 
-analysis_bb.o: analysis_bb.cpp analysis_common.o analysis.h
-	${GCC} -c analysis_bb.cpp analysis_common.o ${LIBS} ${ARGS} -ggdb
+analysis_bb.o: analysis_bb.cpp analysis.h plant_data.h
+	${GCC} -c analysis_bb.cpp ${LIBS} ${ARGS} -ggdb
 
-analysis_wb.o: analysis_wb.cpp analysis_common.o analysis.h 
-	${GCC} -c analysis_wb.cpp analysis_common.o ${LIBS} ${ARGS} -ggdb
+analysis_wb.o: analysis_wb.cpp analysis.h plant_data.h
+	${GCC} -c analysis_wb.cpp ${LIBS} ${ARGS} -ggdb
 
 test: test.cpp filesystem.o
 	${GCC} -o test test.cpp filesystem.o ${LIBS} ${ARGS} -ggdb
 
-PAT32_bb: PAT32.cpp filesystem.o analysis_bb.o format_string.o analysis_common.o
-	${GCC} -o PAT32_bb PAT32.cpp filesystem.o analysis_bb.o format_string.o analysis_common.o ${LIBS} ${ARGS} -ggdb
+PAT32_bb: PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o
+	${GCC} -o PAT32_bb PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o ${LIBS} ${ARGS} -ggdb
 
-PAT32_wb: PAT32.cpp filesystem.o analysis_wb.o format_string.o analysis_common.o
-	${GCC} -o PAT32_wb PAT32.cpp filesystem.o analysis_wb.o format_string.o analysis_common.o ${LIBS} ${ARGS} -ggdb
+PAT32_wb: PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o
+	${GCC} -o PAT32_wb PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o ${LIBS} ${ARGS} -ggdb
 
 clean:
 	rm *.o PAT32_wb PAT32_bb

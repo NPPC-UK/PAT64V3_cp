@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "analysis.h"
+#include "plant_data.h"
 
 
 using namespace cv;
