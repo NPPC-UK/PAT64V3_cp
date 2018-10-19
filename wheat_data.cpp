@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 
-#include "plant_data_wheat.h"
+#include "wheat_data.h"
 
 wheat_data::wheat_data() {
   this->plant_height = 0;

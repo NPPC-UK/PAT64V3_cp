@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "analysis.h"
-#include "plant_data_wheat.h"
+#include "wheat_data.h"
 
 
 using namespace cv;
