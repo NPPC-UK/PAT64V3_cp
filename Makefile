@@ -32,4 +32,6 @@ PAT32_wb: PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o whea
 PAT32_clover: PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o
 	${GCC} -o PAT32_wb PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o ${LIBS} ${ARGS} -ggdb
 clean:
-	rm *.o PAT32_wb PAT32_bb
+	rm *.o PAT32_wb PAT32_bb PAT32_clover
+
+all: PAT32_bb PAT32_wb PAT32_clover
