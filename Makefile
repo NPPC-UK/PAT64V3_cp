@@ -20,6 +20,9 @@ analysis_wb.o: analysis_wb.cpp analysis.h wheat_data.h
 analysis_clover.o: analysis_clover.cpp analysis.h clover_data.h 
 	${GCC} -c analysis_clover.cpp ${LIBS} ${ARGS} -ggdb
 
+analysis_utils.o: analysis_utils.h analysis_utils.cpp
+	${GCC} -c analysis_utils.cpp ${LIBS} ${ARGS} -ggdb
+
 test: test.cpp filesystem.o
 	${GCC} -o test test.cpp filesystem.o ${LIBS} ${ARGS} -ggdb
 

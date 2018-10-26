@@ -21,8 +21,6 @@ Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag
 Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
 Point* OnPotPoints(Mat img);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
-Mat RestoreImgFromTemp(Mat temp, Mat source);
-int OnCountPixels(Mat img, int pottop, int planttop);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
@@ -355,55 +353,6 @@ std::unique_ptr<plant_data> GetData(const char* filename)
   return p_data;
 }
 
-int OnCountPixels(Mat img, int pottop, int planttop)
-{
-  Mat result;
-
-  if(img.channels()!=1)
-    cvtColor(img, result, CV_BGR2GRAY);
-  else
-    result=img.clone();
-
-  int i, j;
-  int count=0;
-
-  for(j=planttop; j<pottop; j++)
-    for(i=result.cols*0.15; i<result.cols*0.85; i++)
-    {
-      if(*(result.data+j*result.step+i)<=210)
-      {
-        count=count+1;
-      }
-    }
-  return count;
-}
-
-Mat RestoreImgFromTemp(Mat temp, Mat source)
-{
-  //temp is the template holding the information where leaf pixels are. source is the original input image
-  Mat output;
-  output=source.clone();
-
-  int i, j;
-  for(i=0; i<temp.cols; i++)
-    for(j=0; j<temp.rows; j++)
-    {
-      if(*(temp.data+j*temp.step+i)!=0)
-      {
-        *(output.data+i*source.channels()+j*source.step)=*(source.data+i*source.channels()+j*source.step);
-        *(output.data+i*source.channels()+j*source.step+1)=*(source.data+i*source.channels()+j*source.step+1);
-        *(output.data+i*source.channels()+j*source.step+2)=*(source.data+i*source.channels()+j*source.step+2);
-      }
-      else
-      {
-        *(output.data+i*source.channels()+j*source.step)=255;
-        *(output.data+i*source.channels()+j*source.step+1)=255;
-        *(output.data+i*source.channels()+j*source.step+2)=255;
-      }
-    }
-
-  return output;
-}
 
 Point* OnPotPoints(Mat img)
 {
