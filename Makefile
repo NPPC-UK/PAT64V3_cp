@@ -1,6 +1,6 @@
 GCC=g++
 LIBS=-lboost_filesystem -lboost_program_options -lboost_system -lopencv_core `pkg-config --libs opencv`
-ARGS=--std=c++11
+ARGS=--std=c++14
 filesystem.o: filesystem.cpp filesystem.h
 	${GCC} -c filesystem.cpp ${LIBS} ${ARGS} -ggdb
 

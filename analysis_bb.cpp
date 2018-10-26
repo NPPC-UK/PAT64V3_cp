@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <regex>
 #include <string>
+#include <memory>
 
 #include <opencv2/opencv.hpp>
 
@@ -25,9 +26,9 @@ int OnCountPixels(Mat img, int pottop, int planttop);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
-plant_data GetData(const char* filename)
+std::unique_ptr<plant_data> GetData(const char* filename)
 {
-  wheat_data p_data = wheat_data();
+  auto p_data = std::make_unique<wheat_data>();
 
   Mat img;
   img=imread(filename);
@@ -213,12 +214,12 @@ plant_data GetData(const char* filename)
     rectangle(image, rectB, Scalar(0, 0, 255), 1, 8, 0);
     //rectangle(image, rectA, Scalar(0, 0, 255), 1, 8, 0);
 
-    p_data.plant_height = plant_height;
-    p_data.pot_width = pot_width;
-    p_data.p_h = p_h;
-    p_data.p_h_t = p_h_t;
-    p_data.pixelcount = pixelcount;
-    p_data.leafArea = leafArea;
+    p_data->plant_height = plant_height;
+    p_data->pot_width = pot_width;
+    p_data->p_h = p_h;
+    p_data->p_h_t = p_h_t;
+    p_data->pixelcount = pixelcount;
+    p_data->leafArea = leafArea;
 
     int t20=0;
     int t20y=0;
@@ -338,16 +339,16 @@ plant_data GetData(const char* filename)
     line(image, Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), Scalar(0,255,255), 2, 8, 0);
 
 
-    p_data.yellowcount = yellowcount;
-    p_data.t20 = t20;
-    p_data.t20y = t20y;
-    p_data.t40 = t40;
-    p_data.t40y = t40y;
-    p_data.t60 = t60;
-    p_data.t60y = t60y;
+    p_data->yellowcount = yellowcount;
+    p_data->t20 = t20;
+    p_data->t20y = t20y;
+    p_data->t40 = t40;
+    p_data->t40y = t40y;
+    p_data->t60 = t60;
+    p_data->t60y = t60y;
 
 
-    p_data.image = image;
+    p_data->image = image;
 
     delete[] pImg0;
   }

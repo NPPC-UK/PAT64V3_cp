@@ -73,16 +73,16 @@ int main(int argc, char* argv[])
 
 
 
-  struct plant_data p_data = GetData(infile.native().c_str());
+  auto p_data = GetData(infile.native().c_str());
 
 
   std::string sep = ", ";
   cout << plant_id << sep <<
     date << sep <<
-    p_data.to_string(sep) << endl;
+    p_data->to_string(sep) << endl;
 
   if (vm.count("output-file"))
-    cv::imwrite(outfile.native(), p_data.image);
+    cv::imwrite(outfile.native(), p_data->image);
 
   return 0;
 }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <regex>
 #include <string>
+#include <memory>
 
 #include <opencv2/opencv.hpp>
 
@@ -24,9 +25,9 @@ int OnCountPixels(Mat img, int pottop, int planttop);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
-plant_data GetData(const char* filename)
+std::unique_ptr<plant_data> GetData(const char* filename)
 {
-  clover_data p_data;
+  auto p_data = std::make_unique<clover_data>();
 
   string s, s1, s2;
 
@@ -323,7 +324,7 @@ plant_data GetData(const char* filename)
           if(mindis<5000)
           {
             drawContours( drawing, contours, idx, color[pos], CV_FILLED, 8, hierarchy );
-            p_data.pixelcount[pos] += area;
+            p_data->pixelcount[pos] += area;
           }
         }
       }
@@ -333,42 +334,42 @@ plant_data GetData(const char* filename)
         {
           if(drawing.at<Vec3b>(j, i)[1]==50 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[0]++;
+            p_data->yellowcount[0]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
           }
           if(drawing.at<Vec3b>(j, i)[1]==255 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[1]++;
+            p_data->yellowcount[1]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
           }
           if(drawing.at<Vec3b>(j, i)[1]==204 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[2]++;
+            p_data->yellowcount[2]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
           }
           if(drawing.at<Vec3b>(j, i)[1]==225 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[3]++;
+            p_data->yellowcount[3]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
           }
           if(drawing.at<Vec3b>(j, i)[1]==104 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[4]++;
+            p_data->yellowcount[4]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
           }
           if(drawing.at<Vec3b>(j, i)[1]==205 &&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[1]*0.95)&&(img.at<Vec3b>(j, i)[2]>img.at<Vec3b>(j, i)[0]*1.5)&& img.at<Vec3b>(j, i)[2]>50)
           {
-            p_data.yellowcount[5]++;
+            p_data->yellowcount[5]++;
             drawing.at<Vec3b>(j,i)[0]=0;
             drawing.at<Vec3b>(j,i)[1]=15;
             drawing.at<Vec3b>(j,i)[2]=255;
@@ -393,7 +394,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[0], Point(i, 700+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(370+dx, 1120+dy), Point(160+dx, 700+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(370+dx, 700+dy), Point(i, 700+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[0]=float(i-370-dx)*0.19;
+                p_data->length[0]=float(i-370-dx)*0.19;
 
                 s = stringf("%0.fmm", float(i-370-dx)*0.19);
                 putText(drawing, s, Point(370+dx+(i-370-dx)/2, 680+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -422,7 +423,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[1], Point(i, 700+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(5230+dx, 1070+dy), Point(5230+dx, 700+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(5610+dx, 700+dy), Point(i, 700+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[1]=float(5610+dx-i)*0.19;
+                p_data->length[1]=float(5610+dx-i)*0.19;
 
                 s = stringf("%0.fmm", float(5610+dx-i)*0.19);
                 putText(drawing, s, Point(5610+dx-(5610+dx-i)/2, 680+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -450,7 +451,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[2], Point(i, 1450+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(160+dx, 2850+dy), Point(160+dx, 2340+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(i, 1450+dy), Point(370+dx, 1450+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[2]=float(i-370-dx)*0.19;
+                p_data->length[2]=float(i-370-dx)*0.19;
 
                 s = stringf("%0.fmm", float(i-370-dx)*0.19);
                 putText(drawing, s, Point(370+dx+(i-370-dx)/2, 1430+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -478,7 +479,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[3], Point(i, 1450+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(5230+dx, 2850+dy), Point(5230+dx, 2310+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(i, 1450+dy), Point(5610+dx, 1450+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[3]=float(5610+dx-i)*0.19;
+                p_data->length[3]=float(5610+dx-i)*0.19;
 
                 s = stringf(s, 200, "%0.fmm", float(5610+dx-i)*0.19);
                 putText(drawing, s, Point(5610+dx-(5610+dx-i)/2, 1430+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -506,7 +507,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[4], Point(i, 2180+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(160+dx, 2850+dy), Point(160+dx, 2340+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(i, 2180+dy), Point(370+dx, 2180+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[4]=float(i-370-dx)*0.19;
+                p_data->length[4]=float(i-370-dx)*0.19;
 
                 s = stringf("%0.fmm", float(i-370-dx)*0.19);
                 putText(drawing, s, Point(370+dx+(i-370-dx)/2, 2160+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -534,7 +535,7 @@ plant_data GetData(const char* filename)
                 line(drawing, top[5], Point(i, 2180+dy), Scalar(0,255,0), 2, 8, 0);
                 //line(drawing, Point(5230+dx, 2850+dy), Point(5230+dx, 2310+dy), Scalar(0,255,0), 2, 8, 0);
                 line(drawing, Point(i, 2180+dy), Point(5610+dx, 2180+dy), Scalar(0,255,0), 2, 8, 0);
-                p_data.length[5]=float(5610+dx-i)*0.19;
+                p_data->length[5]=float(5610+dx-i)*0.19;
 
                 s = stringf("%0.fmm", float(5610+dx-i)*0.19);
                 putText(drawing, s, Point(5610+dx-(5610+dx-i)/2, 2160+dy), 0, 2, Scalar(155,155,0), 3, 8,false);
@@ -558,7 +559,7 @@ plant_data GetData(const char* filename)
 
       img0=img*0.3+drawing*0.7;
 
-      p_data.image = img0;
+      p_data->image = img0;
 
       //fprintf(fp, "%s,%0.f,%0.f,%0.f,%0.f,%0.f,%0.f,%s,%0.f,%0.f,%0.f,%0.f,%0.f,%0.f,%s,%0.f,%0.f,%0.f,%0.f,%0.f,%0.f\n", s1, length[0], pixelcount[0], yellowcount[0], length[1], pixelcount[1], yellowcount[1], s2, length[2], pixelcount[2], yellowcount[2], length[3], pixelcount[3], yellowcount[3],s3, length[4], pixelcount[4], yellowcount[4], length[5], pixelcount[5], yellowcount[5]);
 
