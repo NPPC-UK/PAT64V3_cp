@@ -10,5 +10,18 @@
  * and between rows pottop and planttop.
  */
 int OnCountPixels(cv::Mat img, int pottop, int planttop);
-cv::Mat RestoreImgFromTemp(cv::Mat temp, cv::Mat source);
+
+/**
+ * Apply the mask to the source image.
+ *
+ * The mask is a grayscale (single channel) image.  For any 
+ * pixel with value 0 in the mask, set the corresponding pixel
+ * in the output to (255,255,255). For any pixel with non 0 
+ * value in the mask, copy the value of the source pixel to the
+ * output pixel.
+ *
+ * Assume that the source is a (B,G,R) image.
+ *
+ */
+cv::Mat RestoreImgFromTemp(cv::Mat mask, cv::Mat source);
 #endif
