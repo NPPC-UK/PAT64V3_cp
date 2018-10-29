@@ -9,7 +9,7 @@
  * necessary.  Count only pixels in the central 70% of columns 
  * and between rows pottop and planttop.
  */
-int OnCountPixels(cv::Mat img, int pottop, int planttop);
+int OnCountPixels(const cv::Mat img, unsigned int pottop, unsigned int planttop);
 
 /**
  * Apply the mask to the source image.
@@ -23,5 +23,5 @@ int OnCountPixels(cv::Mat img, int pottop, int planttop);
  * Assume that the source is a (B,G,R) image.
  *
  */
-cv::Mat RestoreImgFromTemp(cv::Mat mask, cv::Mat source);
+cv::Mat RestoreImgFromTemp(const cv::Mat mask, const cv::Mat source);
 #endif

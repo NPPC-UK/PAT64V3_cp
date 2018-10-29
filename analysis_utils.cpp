@@ -1,6 +1,6 @@
 #include "analysis_utils.h"
 
-int OnCountPixels(cv::Mat img, int pottop, int planttop) {
+int OnCountPixels(const cv::Mat img, unsigned int pottop, unsigned int planttop) {
   cv::Mat result;
 
   if(img.channels()!=1)
@@ -22,7 +22,7 @@ int OnCountPixels(cv::Mat img, int pottop, int planttop) {
   return count;
 }
 
-cv::Mat RestoreImgFromTemp(cv::Mat temp, cv::Mat source) {
+cv::Mat RestoreImgFromTemp(const cv::Mat temp, const cv::Mat source) {
   //temp is the template holding the information where leaf pixels are. source is the original input image
   auto output=source.clone();
 
@@ -46,3 +46,4 @@ cv::Mat RestoreImgFromTemp(cv::Mat temp, cv::Mat source) {
 
   return output;
 }
+
