@@ -24,4 +24,17 @@ int OnCountPixels(const cv::Mat img, unsigned int pottop, unsigned int planttop)
  *
  */
 cv::Mat RestoreImgFromTemp(const cv::Mat mask, const cv::Mat source);
+
+/*
+ * Finds the points delimiting a pot on the lemnatec system.
+ *
+ * I conjecture that the following is true
+ *
+ * Point 0 corresponds to the upper edge of the pot, in the centre
+ * of that edge.
+ *
+ * Point 1 corresponds to the left most part of the pot
+ * Point 2 corresponds to the right most part of the pot
+ */
+std::array<cv::Point, 3> FindLTPotEdges(const cv::Mat img);
 #endif

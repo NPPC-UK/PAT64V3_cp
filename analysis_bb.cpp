@@ -19,7 +19,6 @@ Mat CompareImagePixels(Mat img1, Mat img2);
 Point* OnPlantTop(Mat img, Rect rect);
 Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
 Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
-Point* OnPotPoints(Mat img);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
@@ -351,73 +350,6 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     delete[] pImg0;
   }
   return p_data;
-}
-
-
-Point* OnPotPoints(Mat img)
-{
-  Point* pots=new Point[4];//remember to delete after using
-  Mat result;
-
-  if(img.channels()!=1)
-    cvtColor(img, result, CV_BGR2GRAY);
-  else
-    result=img.clone();
-
-  int i, j;
-  int count=0;
-
-  int y=10000;
-  int maxx=0;
-  int minx=10000;
-  int miny=0;
-  int maxy=0;
-
-  for(i=result.cols*0.40; i<result.cols*0.6; i=i+5)
-    for(j=result.rows*0.5; j<result.rows-20; j++)
-    {
-      if(abs(*(result.data+j*result.step+i)-*(result.data+(j-1)*result.step+i))>10)
-      {
-        if(j<y)
-          y=j;
-        break;
-      }
-    }
-
-  pots[0].x=result.cols/2;
-  if(y+10<result.rows)
-    pots[0].y=y+10;
-  else
-    pots[0].y=y;
-
-#pragma omp parallel for
-  for(j=pots[0].y; j<result.rows-20; j++)
-    for(i=result.cols*0.20; i<result.cols*0.8; i=i+1)
-
-    {
-      if(abs(*(result.data+j*result.step+i)-*(result.data+j*result.step+i+1))>10)
-      {
-        if(i<minx)
-        {
-          minx=i+1;
-          miny=j;
-        }
-        if(i>maxx)
-        {
-          maxx=i-1;
-          maxy=j;
-        }
-      }
-    }
-
-  pots[1].x=minx;
-  pots[1].y=miny;
-
-  pots[2].x=maxx;
-  pots[2].y=maxy;
-
-
-  return pots;
 }
 
 Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag)
