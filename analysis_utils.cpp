@@ -155,5 +155,86 @@ std::array<cv::Point, 3> FindLTPotLimits(const cv::Mat img) {
   return pots;
 }
 
+cv::Mat OnMorphology(const cv::Mat img, 
+                     int etimes, 
+                     int dtimes, 
+                     int esize, 
+                     int dsize, 
+                     int flag) {
+  if (flag == 0)
+    return OnMorphology(img, etimes, dtimes, esize, dsize, MorphOp::Open);
+  else
+    return OnMorphology(img, etimes, dtimes, esize, dsize, MorphOp::Close);
+}
+
+cv::Mat OnMorphology(const cv::Mat img, 
+                     int etimes, 
+                     int dtimes, 
+                     int esize, 
+                     int dsize, 
+                     MorphOp op) {
+  cv::Mat result;
+
+  if(img.channels()!=1)
+    cvtColor(img, result, CV_BGR2GRAY);
+  else
+    result=img.clone();
 
 
+  cv::Mat delement, eelement,melement;
+
+  /*int morph_elem = 0;
+    int morph_size = 3;
+    int morph_operator = 0;
+    int const max_operator = 4;
+    int const max_elem = 2;
+    int const max_kernel_size = 21;
+
+    melement=getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size));
+
+    morphologyEx( result, result, 2, melement );//opening to remove holes*/
+
+  int dilation_elem = 0;
+  int dilation_size = dsize;
+  int dilation_type;
+  if( dilation_elem == 0 ){ dilation_type = cv::MORPH_RECT; }
+  else if( dilation_elem == 1 ){ dilation_type = cv::MORPH_CROSS; }
+  else if( dilation_elem == 2) { dilation_type = cv::MORPH_ELLIPSE; }
+
+  delement = cv::getStructuringElement( dilation_type,
+      cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+      cv::Point( dilation_size, dilation_size ) );
+
+
+
+  int erosion_elem = 0;
+  int erosion_size = esize;
+  int erosion_type;
+  if( erosion_elem == 0 ){ erosion_type = cv::MORPH_RECT; }
+  else if( erosion_elem == 1 ){ erosion_type = cv::MORPH_CROSS; }
+  else if( erosion_elem == 2) { erosion_type = cv::MORPH_ELLIPSE; }
+  eelement = cv::getStructuringElement( erosion_type,
+      cv::Size( 2*erosion_size + 1, 2*erosion_size+1 ),
+      cv::Point( erosion_size, erosion_size ) );
+
+
+  if(op == MorphOp::Open)//erode before dilate
+  {
+    /// Apply the erosion operation
+    for(int i=0; i<etimes; i++)
+      erode( result, result, eelement);
+    /// Apply the dilation operation
+    for(int i=0; i<dtimes; i++)
+      dilate( result, result, delement );
+  }
+  else if (op == MorphOp::Close)//dilate before erode
+  {
+    /// Apply the dilation operation
+    for(int i=0; i<dtimes; i++)
+      dilate( result, result, delement );
+    /// Apply the erosion operation
+    for(int i=0; i<etimes; i++)
+      erode( result, result, eelement);
+  }
+  return result;
+}

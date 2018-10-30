@@ -14,26 +14,26 @@ wheat_data.o: wheat_data.cpp wheat_data.h plant_data.o
 analysis_bb.o: analysis_bb.cpp analysis.h wheat_data.h
 	${GCC} -c analysis_bb.cpp ${LIBS} ${ARGS} -ggdb
 
-analysis_wb.o: analysis_wb.cpp analysis.h wheat_data.h 
+analysis_wb.o: analysis_wb.cpp analysis.h wheat_data.h analysis_utils.h
 	${GCC} -c analysis_wb.cpp ${LIBS} ${ARGS} -ggdb
 
-analysis_clover.o: analysis_clover.cpp analysis.h clover_data.h 
+analysis_clover.o: analysis_clover.cpp analysis.h clover_data.h analysis_utils.h
 	${GCC} -c analysis_clover.cpp ${LIBS} ${ARGS} -ggdb
 
-analysis_utils.o: analysis_utils.h analysis_utils.cpp
+analysis_utils.o: analysis_utils.h analysis_utils.cpp analysis_utils.h
 	${GCC} -c analysis_utils.cpp ${LIBS} ${ARGS} -ggdb
 
 test: test.cpp filesystem.o
 	${GCC} -o test test.cpp filesystem.o ${LIBS} ${ARGS} -ggdb
 
-PAT32_bb: PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o wheat_data.o
-	${GCC} -o PAT32_bb PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o wheat_data.o ${LIBS} ${ARGS} -ggdb
+PAT32_bb: PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o wheat_data.o analysis_utils.o
+	${GCC} -o PAT32_bb PAT32.cpp filesystem.o analysis_bb.o format_string.o plant_data.o wheat_data.o analysis_utils.o ${LIBS} ${ARGS} -ggdb
 
-PAT32_wb: PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o wheat_data.o
-	${GCC} -o PAT32_wb PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o wheat_data.o ${LIBS} ${ARGS} -ggdb
+PAT32_wb: PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o wheat_data.o analysis_utils.o
+	${GCC} -o PAT32_wb PAT32.cpp filesystem.o analysis_wb.o format_string.o plant_data.o wheat_data.o analysis_utils.o ${LIBS} ${ARGS} -ggdb
 
-PAT32_clover: PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o
-	${GCC} -o PAT32_clover PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o ${LIBS} ${ARGS} -ggdb
+PAT32_clover: PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o analysis_utils.o
+	${GCC} -o PAT32_clover PAT32.cpp filesystem.o analysis_clover.o format_string.o plant_data.o clover_data.o analysis_utils.o ${LIBS} ${ARGS} -ggdb
 clean:
 	rm *.o PAT32_wb PAT32_bb PAT32_clover
 

@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "analysis.h"
+#include "analysis_utils.h"
 #include "format_string.h"
 #include "clover_data.h"
 
@@ -17,7 +18,6 @@ using namespace std;
 Mat* DeconvolutionMat(Mat img, int m_flag);
 Mat CompareImagePixels(Mat img1, Mat img2);
 Point* OnPlantTop(Mat img, Rect rect);
-Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag);
 Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
@@ -563,74 +563,6 @@ std::unique_ptr<plant_data> GetData(const char* filename)
       return p_data;
     }
   }
-}
-
-Mat OnMorphology(Mat img, int etimes, int dtimes, int esize, int dsize, int flag)
-{
-  Mat result;
-
-  if(img.channels()!=1)
-    cvtColor(img, result, CV_BGR2GRAY);
-  else
-    result=img.clone();
-
-
-  Mat delement, eelement,melement;
-
-  /*int morph_elem = 0;
-    int morph_size = 3;
-    int morph_operator = 0;
-    int const max_operator = 4;
-    int const max_elem = 2;
-    int const max_kernel_size = 21;
-
-    melement=getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size));
-
-    morphologyEx( result, result, 2, melement );//opening to remove holes*/
-
-  int dilation_elem = 0;
-  int dilation_size = dsize;
-  int dilation_type;
-  if( dilation_elem == 0 ){ dilation_type = MORPH_RECT; }
-  else if( dilation_elem == 1 ){ dilation_type = MORPH_CROSS; }
-  else if( dilation_elem == 2) { dilation_type = MORPH_ELLIPSE; }
-
-  delement = getStructuringElement( dilation_type,
-      Size( 2*dilation_size + 1, 2*dilation_size+1 ),
-      Point( dilation_size, dilation_size ) );
-
-
-
-  int erosion_elem = 0;
-  int erosion_size = esize;
-  int erosion_type;
-  if( erosion_elem == 0 ){ erosion_type = MORPH_RECT; }
-  else if( erosion_elem == 1 ){ erosion_type = MORPH_CROSS; }
-  else if( erosion_elem == 2) { erosion_type = MORPH_ELLIPSE; }
-  eelement = getStructuringElement( erosion_type,
-      Size( 2*erosion_size + 1, 2*erosion_size+1 ),
-      Point( erosion_size, erosion_size ) );
-
-
-  if(flag==0)//erode before dilate
-  {
-    /// Apply the erosion operation
-    for(int i=0; i<etimes; i++)
-      erode( result, result, eelement);
-    /// Apply the dilation operation
-    for(int i=0; i<dtimes; i++)
-      dilate( result, result, delement );
-  }
-  else//dilate before erode
-  {
-    /// Apply the dilation operation
-    for(int i=0; i<dtimes; i++)
-      dilate( result, result, delement );
-    /// Apply the erosion operation
-    for(int i=0; i<etimes; i++)
-      erode( result, result, eelement);
-  }
-  return result;
 }
 
 Point* OnPlantTop(Mat img, Rect rect)
