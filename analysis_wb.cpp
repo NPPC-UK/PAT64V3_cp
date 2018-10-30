@@ -16,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 Mat* DeconvolutionMat(Mat img, int m_flag);
-Mat CompareImagePixels(Mat img1, Mat img2);
 Point* OnPlantTop(Mat img, Rect rect);
 Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
 Mat RemoveFrame(Mat temp, Mat source);
@@ -457,31 +456,6 @@ Point* OnPlantTop(Mat img, Rect rect)
     tops[0].y=-1;
     return tops;
   }
-}
-
-Mat CompareImagePixels(Mat img1, Mat img2)
-{
-  //extract plant pixels from image
-  //img1 is the full image, img2 is the image without leaves
-  Mat result;
-  cvtColor(img1, img1, CV_BGR2GRAY);
-  cvtColor(img2, img2, CV_BGR2GRAY);
-  //adaptiveThreshold(img1, img1, 255, CV_ADAPTIVE_THRESH_MEAN_C,CV_THRESH_BINARY,75,10);
-  result=img1.clone();
-
-  int i, j;
-
-#pragma omp parallel for
-  for(i=0; i<img1.cols; i++)
-    for(j=0; j<img1.rows; j++)
-    {
-      if(*(img2.data+j*img2.step+i)>254 && (*(img1.data+j*img1.step+i)-*(img2.data+j*img2.step+i))<-100)
-        *(result.data+j*result.step+i)=255;
-      else
-        *(result.data+j*result.step+i)=0;
-    }
-
-  return result;
 }
 
 Mat* DeconvolutionMat(Mat img, int m_flag)

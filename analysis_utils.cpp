@@ -238,3 +238,28 @@ cv::Mat OnMorphology(const cv::Mat img,
   }
   return result;
 }
+
+
+cv::Mat CompareImagePixels(cv::Mat img1, cv::Mat img2) {
+  //extract plant pixels from image
+  //img1 is the full image, img2 is the image without leaves
+  cvtColor(img1, img1, CV_BGR2GRAY);
+  cvtColor(img2, img2, CV_BGR2GRAY);
+  //adaptiveThreshold(img1, img1, 255, CV_ADAPTIVE_THRESH_MEAN_C,CV_THRESH_BINARY,75,10);
+  auto result=img1.clone();
+
+  int i, j;
+
+#pragma omp parallel for
+  for(i=0; i<img1.cols; i++)
+    for(j=0; j<img1.rows; j++)
+    {
+      if(*(img2.data+j*img2.step+i)>254 && (*(img1.data+j*img1.step+i)-*(img2.data+j*img2.step+i))<-100)
+        *(result.data+j*result.step+i)=255;
+      else
+        *(result.data+j*result.step+i)=0;
+    }
+
+  return result;
+}
+

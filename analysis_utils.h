@@ -68,11 +68,18 @@ cv::Mat OnMorphology(const cv::Mat img,
  *
  * Allows compilation of code that is not aware of MorphOp Enum
  */
+[[deprecated("Use 'cv::Mat OnMorphology(cv::Mat, int, int, int, int, MorphOp)' instead")]]
 cv::Mat OnMorphology(const cv::Mat img, 
                      int etimes, 
                      int dtimes, 
                      int esize, 
                      int dsize, 
                      int flag);
+
+/**
+ * Return an image where any pixel that is 255 in img2 and where that 
+ * pixel in img1 has intensity 154 or less is set to 255, 0 otherwise.
+ */
+cv::Mat CompareImagePixels(cv::Mat img1, cv::Mat img2);
 
 #endif
