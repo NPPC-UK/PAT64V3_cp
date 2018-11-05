@@ -82,4 +82,10 @@ cv::Mat OnMorphology(const cv::Mat img,
  */
 cv::Mat CompareImagePixels(cv::Mat img1, cv::Mat img2);
 
+/*
+ * Suspected: Perform the Ruifrok color deconvolution algorithm
+ * m_flag controls the three colour triplets
+ */
+cv::Mat* DeconvolutionMat(cv::Mat img, int m_flag);
+
 #endif
