@@ -16,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 Point* OnPlantTop(Mat img, Rect rect);
-Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
 {
@@ -605,40 +604,4 @@ Point* OnPlantTop(Mat img, Rect rect)
     tops[0].y=-1;
     return tops;
   }
-}
-
-Mat FindPlantPixels(Mat img, double gthres, double gbthres)
-{
-  Mat output;
-  output=img.clone();
-
-  double b, g, r;
-
-  int i, j;
-  if(img.channels()==3)
-  {
-    for(i=0; i<img.cols; i++)
-      for(j=0; j<img.rows; j++)
-      {
-        b=double(*(output.data+i*output.channels()+j*output.step))/255.0;
-        g=double(*(output.data+i*output.channels()+j*output.step+1))/255.0;
-        r=double(*(output.data+i*output.channels()+j*output.step+2))/255.0;
-
-        //if(g<gthres && r>=b && g>=b)
-        if(g<gthres && r< gthres && b<gthres && b*gbthres<g)
-        {
-          *(output.data+i*output.channels()+j*output.step)=*(output.data+i*output.channels()+j*output.step);
-          *(output.data+i*output.channels()+j*output.step+1)=*(output.data+i*output.channels()+j*output.step+1);
-          *(output.data+i*output.channels()+j*output.step+2)=*(output.data+i*output.channels()+j*output.step+2);
-        }
-        else
-        {
-          *(output.data+i*output.channels()+j*output.step)=255;
-          *(output.data+i*output.channels()+j*output.step+1)=255;
-          *(output.data+i*output.channels()+j*output.step+2)=255;
-        }
-      }
-  }
-
-  return output;
 }

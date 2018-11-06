@@ -17,7 +17,6 @@ using namespace std;
 
 Point* OnPlantTop(Mat img, Rect rect);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
-Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
 {

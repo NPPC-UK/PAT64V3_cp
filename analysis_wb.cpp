@@ -16,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 Point* OnPlantTop(Mat img, Rect rect);
-Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
 {
