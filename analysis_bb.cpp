@@ -17,7 +17,6 @@ using namespace std;
 
 Point* OnPlantTop(Mat img, Rect rect);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
-Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
@@ -395,51 +394,6 @@ Point* OnPlantTop(Mat img, Rect rect)
 }
 
 
-Mat RemoveFrame(Mat temp, Mat source)
-{
-  //temp is the template holding the information where frame is. source is the original input image
-  Mat output;
-  output=source.clone();
-
-  int i, j;
-  if(source.channels()==3)
-  {
-    for(i=0; i<temp.cols; i++)
-      for(j=0; j<temp.rows; j++)
-      {
-        if(*(temp.data+j*temp.step+i)>250)
-        {
-          *(output.data+i*source.channels()+j*source.step)=*(source.data+i*source.channels()+j*source.step);
-          *(output.data+i*source.channels()+j*source.step+1)=*(source.data+i*source.channels()+j*source.step+1);
-          *(output.data+i*source.channels()+j*source.step+2)=*(source.data+i*source.channels()+j*source.step+2);
-        }
-        else
-        {
-          *(output.data+i*source.channels()+j*source.step)=255;
-          *(output.data+i*source.channels()+j*source.step+1)=255;
-          *(output.data+i*source.channels()+j*source.step+2)=255;
-        }
-      }
-  }
-
-  if(source.channels()==1)
-  {
-    for(i=0; i<temp.cols; i++)
-      for(j=0; j<temp.rows; j++)
-      {
-        if(*(temp.data+j*temp.step+i)>250)
-        {
-          *(output.data+i*source.channels()+j*source.step)=*(source.data+i*source.channels()+j*source.step);
-        }
-        else
-        {
-          *(output.data+i*source.channels()+j*source.step)=0;
-        }
-      }
-  }
-
-  return output;
-}
 
 Mat FindPlantPixels(Mat img, double gthres, double gbthres)
 {

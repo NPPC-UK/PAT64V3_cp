@@ -102,4 +102,13 @@ cv::Rect OnFindCarSide(cv::Mat img,
                        int thres, 
                        int flag);
 
+/*
+ * Perform action similar to 'RestoreImgFromTemp'. This function deals with 
+ * RGB and grayscale images.
+ *
+ * Any pixel where the mask is > 250, copy the source pixel to the 
+ * output pixel.  All other pixels are set to 255 on all channels in the case
+ * of a RGB image and 0 in the case of a grayscale image.
+ */
+cv::Mat RemoveFrame(cv::Mat mask, cv::Mat source);
 #endif

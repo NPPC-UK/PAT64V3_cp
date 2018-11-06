@@ -711,4 +711,46 @@ cv::Rect OnFindCarSide(cv::Mat img,
   return rect;
 }
 
+cv::Mat RemoveFrame(cv::Mat mask, cv::Mat source)
+{
+  auto output = source.clone();
 
+  int i, j;
+  if(source.channels()==3)
+  {
+    for(i=0; i<mask.cols; i++)
+      for(j=0; j<mask.rows; j++)
+      {
+        if(*(mask.data+j*mask.step+i)>250)
+        {
+          *(output.data+i*source.channels()+j*source.step)=*(source.data+i*source.channels()+j*source.step);
+          *(output.data+i*source.channels()+j*source.step+1)=*(source.data+i*source.channels()+j*source.step+1);
+          *(output.data+i*source.channels()+j*source.step+2)=*(source.data+i*source.channels()+j*source.step+2);
+        }
+        else
+        {
+          *(output.data+i*source.channels()+j*source.step)=255;
+          *(output.data+i*source.channels()+j*source.step+1)=255;
+          *(output.data+i*source.channels()+j*source.step+2)=255;
+        }
+      }
+  }
+
+  if(source.channels()==1)
+  {
+    for(i=0; i<mask.cols; i++)
+      for(j=0; j<mask.rows; j++)
+      {
+        if(*(mask.data+j*mask.step+i)>250)
+        {
+          *(output.data+i*source.channels()+j*source.step)=*(source.data+i*source.channels()+j*source.step);
+        }
+        else
+        {
+          *(output.data+i*source.channels()+j*source.step)=0;
+        }
+      }
+  }
+
+  return output;
+}
