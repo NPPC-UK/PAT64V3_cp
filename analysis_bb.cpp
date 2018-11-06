@@ -16,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 Point* OnPlantTop(Mat img, Rect rect);
-Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
 Mat RemoveFrame(Mat temp, Mat source);
 Mat FindPlantPixels(Mat img, double gthres, double gbthres);
@@ -440,65 +439,6 @@ Mat RemoveFrame(Mat temp, Mat source)
   }
 
   return output;
-}
-
-Rect OnFindCarSide(Mat img, int etimes , int dtimes , int esize , int dsize , int thres , int flag)
-{
-  Mat conHull;
-
-  if(img.channels()!=1)
-    cvtColor(img, conHull, CV_BGR2GRAY);
-  else
-    conHull=img.clone();
-
-  conHull=OnMorphology(conHull, etimes, dtimes, esize, dsize, flag);// dilate and erode on frame and pot to remove small areas
-
-  vector<vector<Point> > contours;
-  vector<Vec4i> hierarchy;
-  vector<Point> side;
-
-  Mat threshold_output;
-  threshold( conHull, threshold_output, thres, 255, THRESH_BINARY );
-  findContours( threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
-
-
-
-  /*Rect rect;
-    for( int i = 0; i< contours.size(); i++ )
-    {
-    if(contourArea(contours[i], false)>20)
-    {
-    Rect trect;
-    trect=boundingRect(contours[i]);
-
-    if(trect.width<trect.height*1.5 && trect.height<trect.width*1.5)//contour width is less than the 1.5 times of height
-    if(trect.x>conHull.cols*0.25 && trect.x<conHull.cols*0.7 && trect.y>conHull.rows*0.3 && trect.width<conHull.cols*0.4 && trect.height<conHull.rows*0.3)//if the rect value is reasonable
-    {
-    for(int j=0; j<contours[i].size(); j++)
-    side.push_back(contours[i][j]);
-    }
-
-    }
-    }*///MS, MS application
-
-  Rect rect;
-  for( int i = 0; i< contours.size(); i++ )
-  {
-    if(contours[i].size()>20)//100 is a bit of big
-    {
-      Rect trect;
-      trect=boundingRect(contours[i]);
-      if(trect.x>conHull.cols*0.25 && trect.x<conHull.cols*0.7 && trect.y>conHull.rows*0.3 && trect.width<conHull.cols*0.4 && trect.height<conHull.rows*0.3)//if the rect value is reasonable
-      {
-        for(int j=0; j<contours[i].size(); j++)
-          side.push_back(contours[i][j]);
-      }
-
-    }
-  }
-
-  rect=boundingRect(side);
-  return rect;
 }
 
 Mat FindPlantPixels(Mat img, double gthres, double gbthres)

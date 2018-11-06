@@ -651,4 +651,64 @@ cv::Mat* DeconvolutionMat(cv::Mat img, int m_flag)
   return outputimages;
 }
 
+cv::Rect OnFindCarSide(cv::Mat img,
+                       int etimes,
+                       int dtimes,
+                       int esize,
+                       int dsize,
+                       int thres,
+                       int flag)
+{
+  cv::Mat conHull;
+
+  if(img.channels()!=1)
+    cvtColor(img, conHull, CV_BGR2GRAY);
+  else
+    conHull=img.clone();
+
+  conHull=OnMorphology(conHull, etimes, dtimes, esize, dsize, flag);// dilate and erode on frame and pot to remove small areas
+
+  std::vector<std::vector<cv::Point>> contours;
+  std::vector<cv::Vec4i> hierarchy;
+  std::vector<cv::Point> side;
+  cv::Mat threshold_output;
+
+  threshold(conHull, 
+            threshold_output, 
+            thres, 
+            255, 
+            cv::THRESH_BINARY);
+  findContours(threshold_output, 
+               contours, 
+               hierarchy, 
+               CV_RETR_TREE, 
+               CV_CHAIN_APPROX_SIMPLE, 
+               cv::Point(0, 0));
+
+  cv::Rect rect;
+  // Iterate over contours
+  for( int i = 0; i< contours.size(); i++ )
+  {
+    if(contours[i].size()>20)//100 is a bit of big
+    {
+      cv::Rect trect;
+      trect=boundingRect(contours[i]);
+      // CHeck that the contour has sensible size and position in the image. If
+      // yes, this represents the side of the pot
+      if(trect.x>conHull.cols*0.25 && 
+         trect.x<conHull.cols*0.7 && 
+         trect.y>conHull.rows*0.3 && 
+         trect.width<conHull.cols*0.4 && 
+         trect.height<conHull.rows*0.3)
+      {
+        for(int j=0; j<contours[i].size(); j++)
+          side.push_back(contours[i][j]);
+      }
+    }
+  }
+
+  rect=boundingRect(side);
+  return rect;
+}
+
 

@@ -88,4 +88,18 @@ cv::Mat CompareImagePixels(cv::Mat img1, cv::Mat img2);
  */
 cv::Mat* DeconvolutionMat(cv::Mat img, int m_flag);
 
+/*
+ * Find the side of the car. Perform morphological opening/closing
+ * depending on the integer parameters, followed by thresholdind and finding
+ * of contours.  The car is represented by those contours within certain 
+ * restrictions in size and position.
+ */
+cv::Rect OnFindCarSide(cv::Mat img, 
+                       int etimes, 
+                       int dtimes, 
+                       int esize, 
+                       int dsize, 
+                       int thres, 
+                       int flag);
+
 #endif
