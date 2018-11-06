@@ -15,7 +15,6 @@
 using namespace cv;
 using namespace std;
 
-Point* OnPlantTop(Mat img, Rect rect);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
 {
@@ -196,15 +195,14 @@ std::unique_ptr<plant_data> GetData(const char* filename)
 
 
     int planttopflag=0;
-    Point* tops=new Point[4];
-    tops=OnPlantTop(out, rectB);//find top pixel of the plant
-    if(tops[0].y<0 ||tops[0].x<0)
+    auto top=OnPlantTop(out, rectB);//find top pixel of the plant
+    if(top.y<0 ||top.x<0)
     {
-      tops[0].x=rectB.x+rectB.width/2;
-      tops[0].y=rectB.y+rectB.height;
+      top.x=rectB.x+rectB.width/2;
+      top.y=rectB.y+rectB.height;
     }
 
-    if(tops[0].y<img.rows*0.02)
+    if(top.y<img.rows*0.02)
       planttopflag=1;
 
     Point pend;
@@ -214,15 +212,15 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     pend.y=rectB.y+rectB.height;
 
     tend.x=image.cols*0.7;
-    tend.y=tops[0].y;
+    tend.y=top.y;
 
     line(image, Point(rectB.x+rectB.width/2, rectB.y+rectB.height), pend, Scalar(0,255,0), 2, 8, 0);
-    line(image, tops[0], tend, Scalar(0,255,0), 2, 8, 0);
+    line(image, top, tend, Scalar(0,255,0), 2, 8, 0);
 
     line(image, Point(tend.x-10, tend.y), Point(pend.x-10, pend.y), Scalar(0,255,0), 2, 8, 0);
 
     int plant_height, pot_width;
-    plant_height=rectB.y+rectB.height-tops[0].y;//plant height in pixel
+    plant_height=rectB.y+rectB.height-top.y;//plant height in pixel
     pot_width=rectA.width;//pot width in pixel
     double p_h=double(plant_height)*(250/double(pot_width));//plant height in mm
     leafArea=pixelcount*(250/double(pot_width))*(250/double(pot_width));
@@ -230,15 +228,15 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     char s[200];
     //sprintf_s(s, 200, "%5.fmm", p_h );
     sprintf(s, "%5.fmm", p_h );
-    putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2), 0, 2, Scalar(155,155,0), 3, 8,false);
+    putText(image, s, Point(image.cols*0.7+5,top.y+plant_height/2), 0, 2, Scalar(155,155,0), 3, 8,false);
 
     //sprintf_s(s, 200, "%5.fmm", leafArea );
     sprintf(s, "%5.fmm", leafArea );
-    putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2+70), 0, 2, Scalar(155,155,0), 3, 8,false);
+    putText(image, s, Point(image.cols*0.7+5,top.y+plant_height/2+70), 0, 2, Scalar(155,155,0), 3, 8,false);
 
     //sprintf_s(s, 200, "2");
     sprintf(s, "2");
-    putText(image, s, Point(image.cols*0.7+303+8,tops[0].y+plant_height/2+45), 0, 1, Scalar(155,155,0), 3, 8,false);
+    putText(image, s, Point(image.cols*0.7+303+8,top.y+plant_height/2+45), 0, 1, Scalar(155,155,0), 3, 8,false);
 
     rectangle(image, rectB, Scalar(0, 0, 255), 1, 8, 0);
     rectangle(image, rectA, Scalar(0, 0, 255), 1, 8, 0);
@@ -265,7 +263,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     int yellowcount=0;
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y; k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; k++)
+      for(int k=top.y; k<top.y+(rectB.y+rectB.height-top.y)*0.2; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -289,12 +287,12 @@ std::unique_ptr<plant_data> GetData(const char* filename)
         }
       }
 
-    line(image, Point(500, tops[0].y), Point(1954, tops[0].y), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, top.y), Point(1954, top.y), Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; 
-          k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4; k++)
+      for(int k=top.y+(rectB.y+rectB.height-top.y)*0.2; 
+          k<top.y+(rectB.y+rectB.height-top.y)*0.4; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -319,14 +317,14 @@ std::unique_ptr<plant_data> GetData(const char* filename)
       }
 
     line(image, 
-        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2),
-        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2), 
+        Point(500, top.y+(rectB.y+rectB.height-top.y)*0.2),
+        Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.2), 
         Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y);
-          k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; 
+      for(int k=top.y+(rectB.y+rectB.height-top.y);
+          k<top.y+(rectB.y+rectB.height-top.y)*0.6; 
           k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
@@ -352,13 +350,13 @@ std::unique_ptr<plant_data> GetData(const char* filename)
       }
 
     line(image, 
-        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), 
-        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), 
+        Point(500, top.y+(rectB.y+rectB.height-top.y)*0.4), 
+        Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.4), 
         Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; 
+      for(int k=top.y+(rectB.y+rectB.height-top.y)*0.6; 
           k<rectB.y+rectB.height; 
           k++)
       {
@@ -385,8 +383,8 @@ std::unique_ptr<plant_data> GetData(const char* filename)
       }
 
     line(image, 
-        Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), 
-        Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), 
+        Point(500, top.y+(rectB.y+rectB.height-top.y)*0.6), 
+        Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.6), 
         Scalar(0,255,255), 2, 8, 0);
 
     p_data->plant_height = plant_height;
@@ -408,9 +406,9 @@ std::unique_ptr<plant_data> GetData(const char* filename)
   return p_data;
 }
 
-Point* OnPlantTop(Mat img, Rect rect)
+Point OnPlantTop(Mat img, Rect rect)
 {
-  Point* tops=new Point[4];//remember to delete after using
+  auto top = Point(-1, -1);//remember to delete after using
   Mat result;
 
   if(img.channels()!=1)
@@ -438,20 +436,13 @@ Point* OnPlantTop(Mat img, Rect rect)
             ||(*(result.data+(j+15)*result.step+i-15)!=0)||(*(result.data+(j+15)*result.step+i+25)!=0 && flag2)
             ||(*(result.data+(j+15)*result.step+i-25)!=0) && flag1))//check if the left and right pixels below are leaf pixels
       {
-        tops[0].x=i;
-        tops[0].y=j;
+        top.x=i;
+        top.y=j;
         count=count+1;
         break;
       }
     }
-  if(count>0)
-    return tops;
-  else
-  {
-    tops[0].x=-1;
-    tops[0].y=-1;
-    return tops;
-  }
+  return top;
 }
 
 Mat FindPlantPixels(Mat img, double gthres, double gbthres)

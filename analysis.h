@@ -15,4 +15,5 @@ std::unique_ptr<plant_data> GetData(const char* filename);
  */
 cv::Mat FindPlantPixels(cv::Mat img, double gthres, double gbthres);
 
+cv::Point OnPlantTop(cv::Mat img, cv::Rect rect);
 #endif

@@ -15,8 +15,6 @@
 using namespace cv;
 using namespace std;
 
-Point* OnPlantTop(Mat img, Rect rect);
-
 std::unique_ptr<plant_data> GetData(const char* filename)
 {
   auto p_data = std::make_unique<clover_data>();
@@ -557,51 +555,5 @@ std::unique_ptr<plant_data> GetData(const char* filename)
 
       return p_data;
     }
-  }
-}
-
-Point* OnPlantTop(Mat img, Rect rect)
-{
-  Point* tops=new Point[4];//remember to delete after using
-  Mat result;
-
-  if(img.channels()!=1)
-    cvtColor(img, result, CV_BGR2GRAY);
-  else
-    result=img.clone();
-
-  int i, j;
-  int count=0;
-
-  for(j=rect.y; j<rect.y+rect.height; j++)
-    for(i=rect.x+rect.width*0.1; i<rect.x+rect.width*0.9; i++)//keep away from the region border more than 10% of the width
-    {//original includes *(result.data+(j+25)*result.step+i)!=0 ||
-      //check if the leaf top checker position is with scope
-      int flag1=1;
-      int flag2=1;
-
-      if((i-10)<(rect.x+20))
-        flag1=0;
-      if((i+10)>(rect.x+rect.width-20))
-        flag2=0;
-
-      if(*(result.data+j*result.step+i)!=0 && count==0 && (*(result.data+(j+15)*result.step+i)!=0 
-            ||(*(result.data+(j+15)*result.step+i+6)!=0 && flag2)||(*(result.data+(j+15)*result.step+i-6)!=0 && flag1)||(*(result.data+(j+15)*result.step+i+15)!=0 && flag2)
-            ||(*(result.data+(j+15)*result.step+i-15)!=0)||(*(result.data+(j+15)*result.step+i+25)!=0 && flag2)
-            ||(*(result.data+(j+15)*result.step+i-25)!=0) && flag1))//check if the left and right pixels below are leaf pixels
-      {
-        tops[0].x=i;
-        tops[0].y=j;
-        count=count+1;
-        break;
-      }
-    }
-  if(count>0)
-    return tops;
-  else
-  {
-    tops[0].x=-1;
-    tops[0].y=-1;
-    return tops;
   }
 }

@@ -15,7 +15,6 @@
 using namespace cv;
 using namespace std;
 
-Point* OnPlantTop(Mat img, Rect rect);
 Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int thres);
 
 std::unique_ptr<plant_data> GetData(const char* filename)
@@ -140,15 +139,14 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     }
 
     int planttopflag=0;
-    Point* tops=new Point[4];
-    tops=OnPlantTop(out, rectB);//find top pixel of the plant
-    if(tops[0].y<0 ||tops[0].x<0)
+    auto top=OnPlantTop(out, rectB);//find top pixel of the plant
+    if(top.y<0 ||top.x<0)
     {
-      tops[0].x=rectB.x+rectB.width/2;
-      tops[0].y=rectB.y+rectB.height;
+      top.x=rectB.x+rectB.width/2;
+      top.y=rectB.y+rectB.height;
     }
 
-    if(tops[0].y<img.rows*0.02)
+    if(top.y<img.rows*0.02)
       planttopflag=1;
 
 
@@ -168,10 +166,10 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     pend.y=rectB.y+rectB.height;
 
     tend.x=image.cols*0.7;
-    tend.y=tops[0].y;
+    tend.y=top.y;
 
     line(image, Point(rectB.x+rectB.width/2, rectB.y+rectB.height), pend, Scalar(0,255,0), 2, 8, 0);
-    line(image, tops[0], tend, Scalar(0,255,0), 2, 8, 0);
+    line(image, top, tend, Scalar(0,255,0), 2, 8, 0);
     line(image, Point(tend.x-10, tend.y), Point(pend.x-10, pend.y), Scalar(0,255,0), 2, 8, 0);
 
     tend.x=image.cols*0.3;
@@ -182,7 +180,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     line(image, Point(tend.x+10, tend.y), Point(pend.x+10, pend.y), Scalar(255,0,0), 2, 8, 0);
 
     int plant_height, pot_width, plant_height_t;
-    plant_height=rectB.y+rectB.height-tops[0].y;//plant height in pixel
+    plant_height=rectB.y+rectB.height-top.y;//plant height in pixel
     plant_height_t=rectB.y+rectB.height-tiller[0].y;//plant height in pixel
     //pot_width=rectA.width;//pot width in pixel
     pot_width=290;
@@ -193,7 +191,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     char s[200];
     // sprintf_s(s, 200, "%0.fmm", p_h );
     sprintf(s, "%0.fmm", p_h );
-    putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2), 0, 2, Scalar(155,155,0), 3, 8,false);
+    putText(image, s, Point(image.cols*0.7+5,top.y+plant_height/2), 0, 2, Scalar(155,155,0), 3, 8,false);
 
     //sprintf_s(s, 200, "%0.fmm", p_h_t );
     sprintf(s, "%0.fmm", p_h_t );
@@ -201,7 +199,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
 
     //sprintf_s(s, 200, "%0.fsquare mm", leafArea );
     sprintf(s, "%0.fsquare mm", leafArea );
-    putText(image, s, Point(image.cols*0.7+5,tops[0].y+plant_height/2+70), 0, 2, Scalar(155,155,0), 3, 8,false);
+    putText(image, s, Point(image.cols*0.7+5,top.y+plant_height/2+70), 0, 2, Scalar(155,155,0), 3, 8,false);
 
     rectangle(image, rectB, Scalar(0, 0, 255), 1, 8, 0);
     //rectangle(image, rectA, Scalar(0, 0, 255), 1, 8, 0);
@@ -223,7 +221,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     int yellowcount=0;
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y; k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; k++)
+      for(int k=top.y; k<top.y+(rectB.y+rectB.height-top.y)*0.2; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -244,11 +242,11 @@ std::unique_ptr<plant_data> GetData(const char* filename)
         }
       }
 
-    line(image, Point(500, tops[0].y), Point(1954, tops[0].y), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, top.y), Point(1954, top.y), Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2; k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4; k++)
+      for(int k=top.y+(rectB.y+rectB.height-top.y)*0.2; k<top.y+(rectB.y+rectB.height-top.y)*0.4; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -272,11 +270,11 @@ std::unique_ptr<plant_data> GetData(const char* filename)
         }
       }
 
-    line(image, Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2), Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.2), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, top.y+(rectB.y+rectB.height-top.y)*0.2), Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.2), Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4; k<tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; k++)
+      for(int k=top.y+(rectB.y+rectB.height-top.y)*0.4; k<top.y+(rectB.y+rectB.height-top.y)*0.6; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -300,11 +298,11 @@ std::unique_ptr<plant_data> GetData(const char* filename)
         }
       }
 
-    line(image, Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.4), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, top.y+(rectB.y+rectB.height-top.y)*0.4), Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.4), Scalar(0,255,255), 2, 8, 0);
 
 #pragma omp parallel for
     for(int l=rectB.x; l<rectB.x+rectB.width; l++)
-      for(int k=tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6; k<rectB.y+rectB.height; k++)
+      for(int k=top.y+(rectB.y+rectB.height-top.y)*0.6; k<rectB.y+rectB.height; k++)
       {
         if(drawing.at<Vec3b>(k, l)[0]>10 || drawing.at<Vec3b>(k, l)[1]>10 || drawing.at<Vec3b>(k, l)[2]>10)
         {
@@ -328,7 +326,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
         }
       }
 
-    line(image, Point(500, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), Point(1954, tops[0].y+(rectB.y+rectB.height-tops[0].y)*0.6), Scalar(0,255,255), 2, 8, 0);
+    line(image, Point(500, top.y+(rectB.y+rectB.height-top.y)*0.6), Point(1954, top.y+(rectB.y+rectB.height-top.y)*0.6), Scalar(0,255,255), 2, 8, 0);
 
 
     p_data->yellowcount = yellowcount;
@@ -347,9 +345,9 @@ std::unique_ptr<plant_data> GetData(const char* filename)
   return p_data;
 }
 
-Point* OnPlantTop(Mat img, Rect rect)
+Point OnPlantTop(Mat img, Rect rect)
 {
-  Point* tops=new Point[4];//remember to delete after using
+  auto top = cv::Point(-1, -1);//remember to delete after using
   Mat result;
 
   if(img.channels()!=1)
@@ -361,6 +359,7 @@ Point* OnPlantTop(Mat img, Rect rect)
   int count=0;
 
   for(j=rect.y; j<rect.y+rect.height; j++)
+  {
     for(i=rect.x+rect.width*0.1; i<rect.x+rect.width*0.9; i++)//keep away from the region border more than 10% of the width
     {//original includes *(result.data+(j+25)*result.step+i)!=0 ||
       //check if the leaf top checker position is with scope
@@ -376,20 +375,14 @@ Point* OnPlantTop(Mat img, Rect rect)
             ||(*(result.data+(j+10)*result.step+i+4)!=0 && flag2)||(*(result.data+(j+10)*result.step+i-4)!=0 && flag1)||(*(result.data+(j+10)*result.step+i+10)!=0 && flag2)
             ||(*(result.data+(j+10)*result.step+i-10)!=0) && flag1))//check if the left and right pixels below are leaf pixels
       {
-        tops[0].x=i;
-        tops[0].y=j;
+        top.x=i;
+        top.y=j;
         count=count+1;
         break;
       }
     }
-  if(count>0)
-    return tops;
-  else
-  {
-    tops[0].x=-1;
-    tops[0].y=-1;
-    return tops;
   }
+  return top;
 }
 
 
