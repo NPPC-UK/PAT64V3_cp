@@ -15,5 +15,11 @@ std::unique_ptr<plant_data> GetData(const char* filename);
  */
 cv::Mat FindPlantPixels(cv::Mat img, double gthres, double gbthres);
 
+/*
+ * Return the point representing the top of the plant.
+ *
+ * Find the highest plant pixel in the image that contains plant pixels
+ * below it.
+ */
 cv::Point OnPlantTop(cv::Mat img, cv::Rect rect);
 #endif
