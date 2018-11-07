@@ -65,7 +65,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
 
     //Rect rectA=OnFindCarSide(conHull, 5, 5, 4, 4, 215, 1);//220, normal use
     //Rect rectA=OnFindCarSide(img0, 2, 2, 5, 5, 60, 1);//220, for MS
-    Rect rectA=OnFindCarSide(conHull, 9, 9, 1, 1, 180, 1);//200 for w11
+    Rect rectA=OnFindCarSide(conHull, 9, 9, 1, 1, 180, MorphOp::Close);//200 for w11
 
     int rx, ry, rw, rh;
 

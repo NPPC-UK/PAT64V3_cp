@@ -100,7 +100,7 @@ cv::Rect OnFindCarSide(cv::Mat img,
                        int esize, 
                        int dsize, 
                        int thres, 
-                       int flag);
+                       MorphOp op);
 
 /*
  * Perform action similar to 'RestoreImgFromTemp'. This function deals with 
