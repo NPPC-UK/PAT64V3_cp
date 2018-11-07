@@ -18,6 +18,10 @@ PAT64V3 will calculate things like the height of the plant, as well as the area 
 This software depends on [OpenCV](https://opencv.org/), [Boost.Filesystem](https://www.boost.org/doc/libs/1_39_0/libs/filesystem/doc/index.htm),
 and compiles with [GCC](https://gcc.gnu.org/).  
 
+To compile, ensure that the dependencies exist on your system and run `make all` in the project directory.  This will produce three executables:
+`PAT32_wb`, `PAT32_bb` and `PAT32_clover` for analysing data from the Medium to Large dynamic phenotyping platform taken against white and dark backgrounds
+as well as data taken from clover grown in gutters respectively.
+
 ## Author
 
 This software was initially written by [Dr. Jiwan Han](https://www.plant-phenomics.ac.uk/index.php/about/meet-the-team/). 
