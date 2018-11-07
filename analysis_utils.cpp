@@ -666,7 +666,11 @@ cv::Rect OnFindCarSide(cv::Mat img,
   else
     conHull=img.clone();
 
-  conHull=OnMorphology(conHull, etimes, dtimes, esize, dsize, flag);// dilate and erode on frame and pot to remove small areas
+  if (flag == 0)
+    conHull=OnMorphology(conHull, etimes, dtimes, esize, dsize, MorphOp::Open);// dilate and erode on frame and pot to remove small areas
+  else
+    conHull=OnMorphology(conHull, etimes, dtimes, esize, dsize, MorphOp::Close);// dilate and erode on frame and pot to remove small areas
+
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;

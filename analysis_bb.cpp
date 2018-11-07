@@ -60,7 +60,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     cvtColor(pImg0[2], conHull, CV_BGR2GRAY);//for top use pImg[0], side use pImg[2];
 
     Mat tmp;//frame and pot
-    tmp=OnMorphology(conHull, 1, 1, 1, 1, 0);//2, 1, 1, 1, 1; 5, 5, 1, 1, 1
+    tmp=OnMorphology(conHull, 1, 1, 1, 1, MorphOp::Open);//2, 1, 1, 1, 1; 5, 5, 1, 1, 1
 
     threshold( tmp, tmp, 180, 255, THRESH_BINARY );//find pot
 
@@ -471,7 +471,7 @@ Point* OnPlantTopTiller(Mat img, Mat temp, Rect rect, int width, int height, int
           drawing.at<uchar>(j, i)=255;
       }
 
-  drawing=OnMorphology(drawing, 2, 2, 1, 1, 0);
+  drawing=OnMorphology(drawing, 2, 2, 1, 1, MorphOp::Open);
 
   for(j=rect.y; j<rect.y+rect.height; j++)
     for(i=rect.x+20; i<rect.x+rect.width-20; i++)//keep away from the region within 30 pixels to the central panel

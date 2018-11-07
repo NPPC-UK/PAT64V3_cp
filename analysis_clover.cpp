@@ -90,8 +90,8 @@ std::unique_ptr<plant_data> GetData(const char* filename)
 
     threshold(tmp, tmp, 254, 255, CV_THRESH_BINARY_INV);
 
-    tmp=OnMorphology(tmp, 1, 1, 1, 1, 1);
-    tmp=OnMorphology(tmp, 2, 2, 1, 1, 0);
+    tmp=OnMorphology(tmp, 1, 1, 1, 1, MorphOp::Close);
+    tmp=OnMorphology(tmp, 2, 2, 1, 1, MorphOp::Open);
 
     vector<vector<Point>> p[4];
     vector<vector <Point>> ocon;

@@ -59,7 +59,7 @@ std::unique_ptr<plant_data> GetData(const char* filename)
     cvtColor(pImg0[2], conHull, CV_BGR2GRAY);//for top use pImg[0], side use pImg[2];
 
     Mat tmp;//frame and pot
-    tmp=OnMorphology(conHull, 0, 0, 1, 1, 1);//2, 1, 1, 1, 1; 5, 5, 1, 1, 1
+    tmp=OnMorphology(conHull, 0, 0, 1, 1, MorphOp::Close);//2, 1, 1, 1, 1; 5, 5, 1, 1, 1
 
     threshold( tmp, tmp, 180, 255, THRESH_BINARY );//find pot
 
