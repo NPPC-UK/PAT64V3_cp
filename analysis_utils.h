@@ -94,7 +94,6 @@ cv::Mat* DeconvolutionMat(cv::Mat img, int m_flag);
  * of contours.  The car is represented by those contours within certain 
  * restrictions in size and position.
  */
-[[deprecated("Use 'cv::Rect OnFindCarSide(cv::Mat)' with excplitit morphological operation instead")]]
 cv::Rect OnFindCarSide(cv::Mat img, 
                        int etimes, 
                        int dtimes, 
@@ -102,14 +101,6 @@ cv::Rect OnFindCarSide(cv::Mat img,
                        int dsize, 
                        int thres, 
                        MorphOp op);
-
-/*
- * Find the side of the car. Perform morphological opening/closing
- * depending on the integer parameters, followed by thresholdind and finding
- * of contours.  The car is represented by those contours within certain 
- * restrictions in size and position.
- */
-cv::Rect OnFindCarSide(cv::Mat img);
 
 /*
  * Perform action similar to 'RestoreImgFromTemp'. This function deals with 
