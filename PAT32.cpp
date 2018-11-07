@@ -73,16 +73,20 @@ int main(int argc, char* argv[])
 
 
 
-  auto p_data = GetData(infile.native().c_str());
+  try {
+    auto p_data = GetData(infile.native().c_str());
 
 
-  std::string sep = ", ";
-  cout << plant_id << sep <<
-    date << sep <<
-    p_data->to_string(sep) << endl;
+    std::string sep = ", ";
+    cout << plant_id << sep <<
+      date << sep <<
+      p_data->to_string(sep) << endl;
 
-  if (vm.count("output-file"))
-    cv::imwrite(outfile.native(), p_data->image);
+    if (vm.count("output-file"))
+      cv::imwrite(outfile.native(), p_data->image);
 
-  return 0;
+    return 0;
+  } catch ( ... ) {
+    return 1;
+  }
 }
